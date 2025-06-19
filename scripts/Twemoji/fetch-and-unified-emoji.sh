@@ -10,6 +10,7 @@ function clean() {
 clean
 
 function download() {
+    mkdir ${SOURCE_DIR}
     # download noto-emoji and unzip svgs
     curl -L https://github.com/twitter/twemoji/archive/refs/tags/v14.0.2.zip -o "${WORK_DIR}/Twemoji.zip"
     unzip -j "${WORK_DIR}/Twemoji.zip" */svg/*.svg -d ${SOURCE_DIR}
@@ -19,8 +20,8 @@ function unified() {
     cd ${SOURCE_DIR}
     for FILENAME in *.svg; do
         if [ -f "$FILENAME" ]; then
-            FILENAME=${FILENAME%.svg}
-            TARGET_FILENAME=$(echo "$FILENAME" | tr '[:lower:]' '[:upper:]')
+            TARGET_FILENAME=${FILENAME%.svg}
+            TARGET_FILENAME=$(echo "$TARGET_FILENAME" | tr '[:lower:]' '[:upper:]')
             TARGET_FILENAME="${TARGET_FILENAME}.svg"
             
             mv -v "$FILENAME" "$TARGET_FILENAME"
@@ -30,6 +31,7 @@ function unified() {
 }
 
 function compatFE0F() {
+    mkdir -p ${TARGET_DIR}
     FEOF_CODEPOINTS_ARRAY=$(cat "$WORK_DIR/../emoji-test.txt" | grep -v '^#\|^$' | grep 'FE0F' | sed 's/\ *;.*//g')
     while read -r FE0F_CODEPOINTS; do
         SOURCE_FILENAME="$(echo $FE0F_CODEPOINTS | sed 's/ FE0F//g' | sed 's/ /-/g').svg"
